@@ -15,12 +15,17 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var objectKeys = ['qy', 'env', 'error', 'version', 'lanDebug', 'cloud', 'serviceMarket', 'router', 'worklet'];
+var singlePageDisableKey = ['lanDebug', 'router', 'worklet'];
 var target = typeof globalThis !== 'undefined' ? globalThis : function () {
   return this;
 }();
 var key = ['w', 'x'].join('');
 var oldWx = target[key];
+var launchOption = oldWx.getLaunchOptionsSync ? oldWx.getLaunchOptionsSync() : null;
 function isWxKey(key) {
+  if (launchOption && launchOption.scene === 1154 && singlePageDisableKey.includes(key)) {
+    return false;
+  }
   return objectKeys.indexOf(key) > -1 || typeof oldWx[key] === 'function';
 }
 function initWx() {
@@ -354,7 +359,7 @@ var promiseInterceptor = {
     });
   }
 };
-var SYNC_API_RE = /^\$|Window$|WindowStyle$|sendHostEvent|sendNativeEvent|restoreGlobal|requireGlobal|getCurrentSubNVue|getMenuButtonBoundingClientRect|^report|interceptors|Interceptor$|getSubNVueById|requireNativePlugin|upx2px|hideKeyboard|canIUse|^create|Sync$|Manager$|base64ToArrayBuffer|arrayBufferToBase64|getLocale|setLocale|invokePushCallback|getWindowInfo|getDeviceInfo|getAppBaseInfo|getSystemSetting|getAppAuthorizeSetting/;
+var SYNC_API_RE = /^\$|Window$|WindowStyle$|sendHostEvent|sendNativeEvent|restoreGlobal|requireGlobal|getCurrentSubNVue|getMenuButtonBoundingClientRect|^report|interceptors|Interceptor$|getSubNVueById|requireNativePlugin|upx2px|hideKeyboard|canIUse|^create|Sync$|Manager$|base64ToArrayBuffer|arrayBufferToBase64|getLocale|setLocale|invokePushCallback|getWindowInfo|getDeviceInfo|getAppBaseInfo|getSystemSetting|getAppAuthorizeSetting|initUTS|requireUTS|registerUTS/;
 var CONTEXT_API_RE = /^create|Manager$/;
 
 // Context例外情况
@@ -734,6 +739,8 @@ function populateParameters(result) {
     deviceOrientation = result.deviceOrientation;
   // const isQuickApp = "mp-weixin".indexOf('quickapp-webview') !== -1
 
+  var extraParam = {};
+
   // osName osVersion
   var osName = '';
   var osVersion = '';
@@ -772,8 +779,8 @@ function populateParameters(result) {
     appVersion: "1.0.0",
     appVersionCode: "100",
     appLanguage: getAppLanguage(hostLanguage),
-    uniCompileVersion: "3.6.18",
-    uniRuntimeVersion: "3.6.18",
+    uniCompileVersion: "3.7.3",
+    uniRuntimeVersion: "3.7.3",
     uniPlatform: undefined || "mp-weixin",
     deviceBrand: deviceBrand,
     deviceModel: model,
@@ -798,7 +805,7 @@ function populateParameters(result) {
     browserName: undefined,
     browserVersion: undefined
   };
-  Object.assign(result, parameters);
+  Object.assign(result, parameters, extraParam);
 }
 function getGetDeviceType(result, model) {
   var deviceType = result.deviceType || 'phone';
@@ -917,6 +924,17 @@ var getAppAuthorizeSetting = {
 
 // import navigateTo from 'uni-helpers/navigate-to'
 
+var compressImage = {
+  args: function args(fromArgs) {
+    // https://developers.weixin.qq.com/community/develop/doc/000c08940c865011298e0a43256800?highLine=compressHeight
+    if (fromArgs.compressedHeight && !fromArgs.compressHeight) {
+      fromArgs.compressHeight = fromArgs.compressedHeight;
+    }
+    if (fromArgs.compressedWidth && !fromArgs.compressWidth) {
+      fromArgs.compressWidth = fromArgs.compressedWidth;
+    }
+  }
+};
 var protocols = {
   redirectTo: redirectTo,
   // navigateTo,  // 由于在微信开发者工具的页面参数，会显示__id__参数，因此暂时关闭mp-weixin对于navigateTo的AOP
@@ -927,7 +945,8 @@ var protocols = {
   getAppBaseInfo: getAppBaseInfo,
   getDeviceInfo: getDeviceInfo,
   getWindowInfo: getWindowInfo,
-  getAppAuthorizeSetting: getAppAuthorizeSetting
+  getAppAuthorizeSetting: getAppAuthorizeSetting,
+  compressImage: compressImage
 };
 var todos = ['vibrate', 'preloadPage', 'unPreloadPage', 'loadSubPackage'];
 var canIUses = [];
@@ -9421,7 +9440,7 @@ internalMixin(Vue);
 /***/ }),
 /* 26 */
 /*!**********************************!*\
-  !*** D:/ui-app/day05/pages.json ***!
+  !*** D:/ui-app/day06/pages.json ***!
   \**********************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
@@ -9481,6 +9500,9 @@ function normalizeComponent (
   }
   // fixed by xxxxxx renderjs
   if (renderjs) {
+    if(typeof renderjs.beforeCreate === 'function'){
+			renderjs.beforeCreate = [renderjs.beforeCreate]
+		}
     (renderjs.beforeCreate || (renderjs.beforeCreate = [])).unshift(function() {
       this[renderjs.__module] = this
     });
@@ -9562,34 +9584,9 @@ function normalizeComponent (
 
 
 /***/ }),
-/* 33 */,
-/* 34 */,
-/* 35 */,
-/* 36 */,
-/* 37 */,
-/* 38 */,
-/* 39 */,
-/* 40 */,
-/* 41 */,
-/* 42 */,
-/* 43 */,
-/* 44 */,
-/* 45 */,
-/* 46 */,
-/* 47 */,
-/* 48 */,
-/* 49 */,
-/* 50 */,
-/* 51 */,
-/* 52 */,
-/* 53 */,
-/* 54 */,
-/* 55 */,
-/* 56 */,
-/* 57 */,
-/* 58 */
+/* 33 */
 /*!******************************************************************************************!*\
-  !*** D:/ui-app/day05/node_modules/@escook/request-miniprogram/miniprogram_dist/index.js ***!
+  !*** D:/ui-app/day06/node_modules/@escook/request-miniprogram/miniprogram_dist/index.js ***!
   \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
@@ -9698,7 +9695,13 @@ exports.$http = $http;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
-/* 59 */
+/* 34 */,
+/* 35 */,
+/* 36 */,
+/* 37 */,
+/* 38 */,
+/* 39 */,
+/* 40 */
 /*!************************************************************************************************!*\
   !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/@babel/runtime/regenerator/index.js ***!
   \************************************************************************************************/
@@ -9707,11 +9710,11 @@ exports.$http = $http;
 
 // TODO(Babel 8): Remove this file.
 
-var runtime = __webpack_require__(/*! @babel/runtime/helpers/regeneratorRuntime */ 60)();
+var runtime = __webpack_require__(/*! @babel/runtime/helpers/regeneratorRuntime */ 41)();
 module.exports = runtime;
 
 /***/ }),
-/* 60 */
+/* 41 */
 /*!*******************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/regeneratorRuntime.js ***!
   \*******************************************************************/
@@ -10032,7 +10035,7 @@ function _regeneratorRuntime() {
 module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 61 */
+/* 42 */
 /*!*****************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/asyncToGenerator.js ***!
   \*****************************************************************/
