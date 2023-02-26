@@ -11,7 +11,8 @@
       "pages": [
         "goods_id/goods_id",
         "goods_list/goods_list",
-        "search/search"
+        "search/search",
+        "goods_detail/goods_detail"
       ]
     }
   ],
