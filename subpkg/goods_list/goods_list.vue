@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<block v-for="(item,i) in goodsList" :key="i">
-			<my-goods :goods='item' @click.native="gotoDetail(item)"></my-goods>
+			<my-goods :goods='item' @click.native="gotoDetail(item.goods_id)"></my-goods>
 		</block>
 	</view>
 </template>

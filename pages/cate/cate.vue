@@ -34,7 +34,9 @@
 </template>
 
 <script>
+	import badgeMix from '@/mixins/tabbar-badge.js'
 	export default {
+		mixins: [badgeMix],
 		data() {
 			return {
 				cateList: [], //分类列表数据

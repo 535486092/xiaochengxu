@@ -21,7 +21,7 @@
 				</view>
 			</view>
 			<!-- 运费 -->
-			<view class="yf">快递：免运费</view>
+			<view class="yf">快递：免运费 -- {{cart.length}}</view>
 		</view>
 		<!-- 商品详情信息 -->
 		<rich-text :nodes="goodsInfo.goods_introduce"></rich-text>
@@ -33,6 +33,11 @@
 </template>
 
 <script>
+	import {
+		mapState,
+		mapMutations,
+		mapGetters
+	} from 'vuex'
 	export default {
 		data() {
 			return {
@@ -100,6 +105,37 @@
 					})
 				}
 			},
+			...mapMutations('m_cart', ['addCart']),
+			//右侧按钮的点击事件
+			buttonClick(e) {
+				if (e.content.text === '加入购物车') {
+					const goods = {
+						goods_id: this.goodsInfo.goods_id, // 商品的Id
+						goods_name: this.goodsInfo.goods_name, // 商品的名称
+						goods_price: this.goodsInfo.goods_price, // 商品的价格
+						goods_count: 1, // 商品的数量
+						goods_small_logo: this.goodsInfo.goods_small_logo, // 商品的图片
+						goods_state: true // 商品的勾选状态
+					}
+					//调用cart的addCart方法
+					this.addCart(goods)
+				}
+			}
+		},
+		computed: {
+			// 调用 mapState 方法，把 cart 模块中的 cart 数组映射到当前页面中，作为计算属性来使用
+			// ...mapState('模块的名称', ['要映射的数据名称1', '要映射的数据名称2'])
+			...mapState('m_cart', ['cart']),
+			...mapGetters('m_cart', ['total'])
+		},
+		//通过侦听器的方法监听total的状态
+		watch: {
+			total: {
+				handler(newTotal) {
+					this.options[1].info = newTotal
+				},
+				immediate: true
+			}
 		}
 	}
 </script>
